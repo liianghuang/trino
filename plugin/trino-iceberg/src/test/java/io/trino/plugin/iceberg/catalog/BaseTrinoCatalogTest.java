@@ -35,6 +35,7 @@ import io.trino.spi.connector.ConnectorMaterializedViewDefinition;
 import io.trino.spi.connector.ConnectorMetadata;
 import io.trino.spi.connector.ConnectorSession;
 import io.trino.spi.connector.ConnectorViewDefinition;
+import io.trino.spi.connector.SaveMode;
 import io.trino.spi.connector.SchemaTableName;
 import io.trino.spi.security.PrincipalType;
 import io.trino.spi.security.TrinoPrincipal;
@@ -434,7 +435,7 @@ public abstract class BaseTrinoCatalogTest
 
         try {
             catalog.createNamespace(SESSION, namespace, defaultNamespaceProperties(namespace), new TrinoPrincipal(PrincipalType.USER, SESSION.getUser()));
-            catalog.createView(SESSION, schemaTableName, viewDefinition, false);
+            catalog.createView(SESSION, schemaTableName, viewDefinition, SaveMode.FAIL);
 
             assertThat(catalog.listTables(SESSION, Optional.of(namespace)).stream()).contains(new TableInfo(schemaTableName, getViewType()));
 
@@ -531,7 +532,7 @@ public abstract class BaseTrinoCatalogTest
                                 Optional.of(SESSION.getUser()),
                                 false,
                                 ImmutableList.of()),
-                        false);
+                        SaveMode.FAIL);
                 closer.register(() -> catalog.dropView(SESSION, view));
                 allTables.add(new TableInfo(view, getViewType()));
             }
